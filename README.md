@@ -9,7 +9,22 @@ Công thức để tính mức sử dụng CPU của một tiến trình:
 - **Code Java**
 
 ```java
-double cpuUsage = (100d * (process.getKernelTime() + process.getUserTime())/ process.getUpTime())/ logicalProcessorCount;
+double cpuUsage = 0.0;
+
+        // Tính toán CPU Usage dựa trên trạng thái trước đó
+        if (processStatsMap.containsKey(pid)) {
+            ProcessStats stats = processStatsMap.get(pid);
+            long deltaKernelTime = kernelTime - stats.previousKernelTime;
+            long deltaUserTime = userTime - stats.previousUserTime;
+            long deltaTime = currentTime - stats.previousUpdateTime;
+
+            if (deltaTime > 0) {
+                cpuUsage = (100.0 * (deltaKernelTime + deltaUserTime)) / (deltaTime * logicalProcessorCount);
+            }
+        }
+
+        // Cập nhật trạng thái mới
+        processStatsMap.put(pid, new ProcessStats(kernelTime, userTime, currentTime));
 ```
 
 Trong đó:
