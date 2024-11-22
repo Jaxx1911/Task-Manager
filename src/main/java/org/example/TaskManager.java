@@ -204,8 +204,7 @@ public class TaskManager extends JFrame {
             } else if (memoryUsage.endsWith(" B")) {
                 return Double.parseDouble(memoryUsage.replace(" B", "")) / (1024 * 1024);
             }
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
+        } catch (NumberFormatException ignored) {
         }
         return 0;
     }
