@@ -100,7 +100,23 @@ public class TaskManager extends JFrame {
         ).forEach(process -> {
             String processName = process.getName();
             int pid = process.getProcessID();
-            double cpuUsage = (100d * (process.getKernelTime() + process.getUserTime())/ process.getUpTime() )/ logicalProcessorCount;
+
+            long currentKernel = process.getKernelTime(), currentUserTime = process.getUserTime(), currentTime = System.currentTimeMillis();
+            double cpuUsage = 0.0;
+
+            // Tính toán CPU Usage dựa trên trạng thái trước đó
+            if (processStatsMap.containsKey(pid)) {
+                ProcessStats stats = processStatsMap.get(pid);
+                long deltaKernelTime = currentKernel - stats.previousKernelTime;
+                long deltaUserTime = currentUserTime - stats.previousUserTime;
+                long deltaTime = currentTime - stats.previousUpdateTime;
+
+                if (deltaTime > 0) {
+                    cpuUsage = (100.0 * (deltaKernelTime + deltaUserTime)) / (deltaTime);
+                }
+            }
+            processStatsMap.put(pid, new ProcessStats(currentKernel, currentUserTime, currentTime));
+
             long cpuTime = process.getKernelTime() + process.getUserTime();
             String formattedCpuTime = formatCpuTime(cpuTime);
             String memoryUsage = humanReadableByteCountBin(process.getResidentSetSize());
