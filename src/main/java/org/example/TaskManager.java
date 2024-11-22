@@ -94,7 +94,7 @@ public class TaskManager extends JFrame {
 
         //GetProcess
         os.getProcesses(
-                process -> true,
+                null,
                 OperatingSystem.ProcessSorting.CPU_DESC,
                 Integer.MAX_VALUE
         ).forEach(process -> {
